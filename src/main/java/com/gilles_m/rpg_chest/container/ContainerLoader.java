@@ -53,8 +53,8 @@ public class ContainerLoader {
 		if(container == null || metadata == null) {
 			return Optional.empty();
 		}
-		/*container.setId(file.getName().split("\\.")[0]);
-		container.setMetadata(metadata);*/
+		container.setId(file.getName().split("\\.")[0]);
+		container.setMetadata(metadata);
 
 		return Optional.of(container);
 	}

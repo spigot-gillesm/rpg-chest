@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleContainer extends Container {
 
-	public SimpleContainer() { }
-
 	@Override
 	public void spawn(@NotNull final Location location, @NotNull final BlockFace blockFace) {
 		ContainerManager.getInstance().getContainer(getId())
