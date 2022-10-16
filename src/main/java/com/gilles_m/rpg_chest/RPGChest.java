@@ -2,6 +2,8 @@ package com.gilles_m.rpg_chest;
 
 import com.gilles_m.rpg_chest.container.ContainerLoader;
 import com.gilles_m.rpg_chest.item_table.TableLoader;
+import com.gilles_m.rpg_chest.listener.ContainerListener;
+import com.gilles_m.rpg_chest.listener.PlayerListener;
 import com.github.spigot_gillesm.command_lib.CommandLib;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -27,6 +29,10 @@ public class RPGChest extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		initialize(this);
+
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new ContainerListener(), this);
+
 		Formatter.info("&aDone!");
 	}
 

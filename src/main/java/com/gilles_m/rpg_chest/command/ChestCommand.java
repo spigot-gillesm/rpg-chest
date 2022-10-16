@@ -36,17 +36,23 @@ public class ChestCommand extends SimpleCommand {
 			setAliases(List.of("s"));
 			setPlayerCommand(true);
 			setDescription("Spawn a new instance of the specified container at your location");
+			addMandatoryArgument("container id");
 		}
 
 		@Override
 		protected void run(final CommandSender commandSender, final String[] args) {
+			if(args.length == 0) {
+				Formatter.tell(commandSender, "&cYou must specify the container id");
+				return;
+			}
+			Formatter.info("spawning chest");
 			final var containerId = args[0];
 			final var player = (Player) commandSender;
 
-			ContainerManager.getInstance().getContainer(containerId)
-					.ifPresentOrElse(container ->
-									container.newInstance(player.getLocation(), player.getFacing())
-											.spawn(),
+			ContainerManager.getInstance()
+					.getContainer(containerId)
+					.ifPresentOrElse(container -> container.newInstance(player.getLocation(), player.getFacing())
+									.spawn(),
 							() -> Formatter.tell(commandSender, "&cUnknown container id: %s", containerId));
 		}
 
