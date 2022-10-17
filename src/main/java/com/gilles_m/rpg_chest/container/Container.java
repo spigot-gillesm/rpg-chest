@@ -69,6 +69,7 @@ public abstract class Container {
 		TableManager.getInstance().getItemTable(itemTable)
 				.ifPresent(table -> {
 					final var inventory = bukkitContainer.getInventory();
+					inventory.clear();
 					final var items = table.generateItems();
 
 					//Pick random positions within the container to place items

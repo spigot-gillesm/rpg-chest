@@ -45,7 +45,6 @@ public class ChestCommand extends SimpleCommand {
 				Formatter.tell(commandSender, "&cYou must specify the container id");
 				return;
 			}
-			Formatter.info("spawning chest");
 			final var containerId = args[0];
 			final var player = (Player) commandSender;
 
