@@ -1,10 +1,12 @@
 package com.gilles_m.rpg_chest.container;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import com.gilles_m.rpg_chest.container.instance.InstanceManager;
+import com.gilles_m.rpg_chest.container_event.ContainerEvent;
 import com.gilles_m.rpg_chest.item_table.TableManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.google.common.base.MoreObjects;
@@ -18,7 +20,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Container {
@@ -39,6 +43,10 @@ public abstract class Container {
 	@Getter
 	@JsonDeserialize(using = ContainerDeserializer.MaterialDeserializer.class)
 	private Metadata metadata;
+
+	//TODO: deserializer
+	@JsonIgnore
+	private Set<ContainerEvent> containerEvents = new HashSet<>();
 
 	private final Random random = new SecureRandom();
 
