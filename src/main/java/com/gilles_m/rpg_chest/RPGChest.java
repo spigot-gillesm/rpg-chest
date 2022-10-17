@@ -16,6 +16,7 @@ public class RPGChest extends JavaPlugin {
 	private static RPGChest instance;
 
 	private static void initialize(final RPGChest plugin) {
+		instance = plugin;
 		Formatter.PREFIX = "&f[&eRPG&aChest&f]";
 		FileUtils.PLUGIN_DATA_FOLDER_PATH = plugin.getDataFolder().getPath();
 

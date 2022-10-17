@@ -1,10 +1,10 @@
 package com.gilles_m.rpg_chest.container.instance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gilles_m.rpg_chest.Cooldown;
 import com.gilles_m.rpg_chest.container.Container;
 import com.gilles_m.rpg_chest.container.ContainerManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -33,8 +33,7 @@ public class ContainerInstance {
 	@JsonProperty("face")
 	private BlockFace blockFace;
 
-	@Getter
-	private boolean onCooldown = false;
+	private final Cooldown cooldown = new Cooldown();
 
 	public ContainerInstance() {
 		//Default constructor for Jackson
@@ -69,17 +68,16 @@ public class ContainerInstance {
 	 */
 	public void spawn(final boolean fill) {
 		final var location = getLocation();
-		ContainerManager.getInstance().getContainer(containerId)
-				.ifPresent(container -> {
-					container.spawn(location, blockFace);
-					final var bukkitContainer = getBukkitContainer();
+		final var container = getContainer();
+		container.spawn(location, blockFace);
 
-					if(fill) {
-						container.fillInventory(getBukkitContainer());
-					}
-					bukkitContainer.setCustomName(Formatter.colorize(container.getMetadata().getDisplayName()));
-					bukkitContainer.update();
-				});
+		final var bukkitContainer = getBukkitContainer();
+
+		if(fill) {
+			container.fillInventory(getBukkitContainer());
+		}
+		bukkitContainer.setCustomName(Formatter.colorize(container.getMetadata().getDisplayName()));
+		bukkitContainer.update();
 	}
 
 	public void fillInventory() {
@@ -87,18 +85,38 @@ public class ContainerInstance {
 				.ifPresent(container -> container.fillInventory((org.bukkit.block.Container) getLocation().getBlock().getState()));
 	}
 
+	/**
+	 * Starts the cooldown with the specified duration.
+	 *
+	 * @param duration the cooldown duration in seconds
+	 */
+	public void startCooldown(final long duration) {
+		cooldown.start(this, duration);
+	}
+
+	/**
+	 * Starts the cooldown with the container cooldown's duration.
+	 */
 	public void startCooldown() {
-		//TODO
+		startCooldown(getContainer().getMetadata().getCooldown());
 	}
 
 	public void destroy() {
 		InstanceManager.getInstance().remove(this);
 	}
 
+	@NotNull
 	public Location getLocation() {
 		return new Location(Bukkit.getWorld(world), x, y, z);
 	}
 
+	@NotNull
+	public Container getContainer() {
+		return ContainerManager.getInstance().getContainer(containerId)
+				.orElseThrow(() -> new IllegalStateException("A container instance is referring to a removed container"));
+	}
+
+	@NotNull
 	public org.bukkit.block.Container getBukkitContainer() {
 		final var block = getLocation().getBlock();
 
@@ -107,6 +125,10 @@ public class ContainerInstance {
 		}
 
 		return (org.bukkit.block.Container) getLocation().getBlock().getState();
+	}
+
+	public boolean isOnCooldown() {
+		return cooldown.remainingTime() > 0;
 	}
 
 }
