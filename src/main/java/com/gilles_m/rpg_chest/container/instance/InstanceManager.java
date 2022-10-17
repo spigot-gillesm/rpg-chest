@@ -3,6 +3,7 @@ package com.gilles_m.rpg_chest.container.instance;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +32,17 @@ public class InstanceManager {
 
 	public void clear() {
 		registeredInstances.clear();
+	}
+
+	public int size() {
+		return registeredInstances.size();
+	}
+
+	/**
+	 * @return an immutable set containing all the registered instances
+	 */
+	public Set<ContainerInstance> getRegisteredInstances() {
+		return Collections.unmodifiableSet(registeredInstances);
 	}
 
 	public static InstanceManager getInstance() {

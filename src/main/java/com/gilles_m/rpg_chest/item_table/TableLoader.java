@@ -38,7 +38,7 @@ public class TableLoader {
 					.forEach(f -> {
 								try {
 									loadItemTableFromFile(f)
-											.ifPresent(manager::registerTable);
+											.ifPresent(manager::register);
 								} catch (final IOException e) {
 									Formatter.error(String.format("Unable to load item table %s: Invalid data", f.getName()));
 									e.printStackTrace();

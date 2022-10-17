@@ -19,7 +19,7 @@ public class TableManager {
 	 *
 	 * @param itemTable the item table
 	 */
-	public void registerTable(@NotNull final ItemTable itemTable) {
+	public void register(@NotNull final ItemTable itemTable) {
 		registeredTables.add(itemTable);
 	}
 
