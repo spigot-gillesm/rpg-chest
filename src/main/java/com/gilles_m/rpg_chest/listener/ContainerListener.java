@@ -1,5 +1,6 @@
 package com.gilles_m.rpg_chest.listener;
 
+import com.gilles_m.rpg_chest.event.ContainerOffCooldownEvent;
 import com.gilles_m.rpg_chest.event.ContainerOpenEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +14,15 @@ public class ContainerListener implements Listener {
 		if(!containerInstance.isOnCooldown()) {
 			containerInstance.fillInventory();
 			containerInstance.startCooldown();
+		}
+	}
+
+	@EventHandler
+	protected void onContainerOffCooldown(final ContainerOffCooldownEvent event) {
+		final var instance = event.getContainerInstance();
+
+		if(event.getLocation().getBlock().getType() != instance.getContainer().getMaterial()) {
+			instance.spawn();
 		}
 	}
 

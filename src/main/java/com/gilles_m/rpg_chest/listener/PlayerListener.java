@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerListener implements Listener {
@@ -34,6 +35,18 @@ public class PlayerListener implements Listener {
 
 					if(containerEvent.isCancelled()) {
 						event.setCancelled(true);
+					}
+				});
+	}
+
+	@EventHandler
+	protected void onPlayerBreakBlock(final BlockBreakEvent event) {
+		//Check if a player has broken a rpg chest
+		InstanceManager.getInstance().getContainerInstance(event.getBlock().getLocation())
+				.ifPresent(instance -> {
+					if(!instance.isOnCooldown()) {
+						instance.fillInventory();
+						instance.startCooldown();
 					}
 				});
 	}

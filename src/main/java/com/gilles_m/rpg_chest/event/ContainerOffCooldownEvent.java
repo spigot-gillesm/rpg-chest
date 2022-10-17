@@ -2,6 +2,7 @@ package com.gilles_m.rpg_chest.event;
 
 import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import lombok.Getter;
+import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,11 @@ public class ContainerOffCooldownEvent extends Event {
 
 	public ContainerOffCooldownEvent(@NotNull final ContainerInstance containerInstance) {
 		this.containerInstance = containerInstance;
+	}
+
+	@NotNull
+	public Location getLocation() {
+		return containerInstance.getLocation();
 	}
 
 	@Override

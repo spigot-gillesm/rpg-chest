@@ -1,6 +1,7 @@
 package com.gilles_m.rpg_chest.container.instance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -8,6 +9,7 @@ import com.gilles_m.rpg_chest.Cooldown;
 import com.gilles_m.rpg_chest.container.Container;
 import com.gilles_m.rpg_chest.container.ContainerManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
+import com.google.common.base.MoreObjects;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a specific container, meaning an instance of a container.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContainerInstance {
 
 	@Getter
@@ -90,7 +93,11 @@ public class ContainerInstance {
 
 	public void fillInventory() {
 		ContainerManager.getInstance().getContainer(containerId)
-				.ifPresent(container -> container.fillInventory((org.bukkit.block.Container) getLocation().getBlock().getState()));
+				.ifPresentOrElse(container -> container.fillInventory((org.bukkit.block.Container) getLocation().getBlock().getState()),
+						() -> Formatter.warning(
+								String.format("A container instance is referring to a removed container: %s", containerId)
+						)
+				);
 	}
 
 	/**
@@ -98,7 +105,7 @@ public class ContainerInstance {
 	 *
 	 * @param duration the cooldown duration in seconds
 	 */
-	public void startCooldown(final long duration) {
+	public void startCooldown(final double duration) {
 		cooldown.start(this, duration);
 	}
 
@@ -146,6 +153,17 @@ public class ContainerInstance {
 	@JsonIgnore
 	public boolean isOnCooldown() {
 		return getRemainingCooldown() > 0;
+	}
+
+	public final String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("containerId", containerId)
+				.add("world", world)
+				.add("x", x)
+				.add("y", y)
+				.add("z", z)
+				.add("cooldown", cooldown.toString())
+				.toString();
 	}
 
 }

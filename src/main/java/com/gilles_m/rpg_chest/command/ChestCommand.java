@@ -13,11 +13,11 @@ import java.util.List;
 public class ChestCommand extends SimpleCommand {
 
 	public ChestCommand() {
-		super("chest");
-		setAliases(List.of("ch", "c"));
+		super("container");
+		setAliases(List.of("cont", "ctnr", "c"));
 		setPlayerCommand(false);
 		setDescription("RPGChest main command");
-		setPermission("rpgchest.chest");
+		setPermission("rpgchest.container");
 
 		new SpawnChestCommand(this);
 	}
@@ -34,6 +34,7 @@ public class ChestCommand extends SimpleCommand {
 		private SpawnChestCommand(final SimpleCommand parentCommand) {
 			super(parentCommand, "spawn");
 			setAliases(List.of("s"));
+			setPermission("rpgchest.container.spawn");
 			setPlayerCommand(true);
 			setDescription("Spawn a new instance of the specified container at your location");
 			addMandatoryArgument("container id");
