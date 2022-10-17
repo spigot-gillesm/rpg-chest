@@ -1,16 +1,28 @@
 package com.gilles_m.rpg_chest.container.instance;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import org.bukkit.block.BlockFace;
 
 import java.io.IOException;
 
-public class InstanceDeserializer {
+public class InstanceSerialization {
 
-	private InstanceDeserializer() { }
+	private InstanceSerialization() { }
+
+	public static class BlockFaceSerializer extends JsonSerializer<BlockFace> {
+
+		@Override
+		public void serialize(final BlockFace blockFace, final JsonGenerator jsonGenerator,
+							  final SerializerProvider serializers) throws IOException {
+			jsonGenerator.writeObject(blockFace.name());
+		}
+	}
 
 	public static class BlockFaceDeserializer extends StdDeserializer<BlockFace> {
 

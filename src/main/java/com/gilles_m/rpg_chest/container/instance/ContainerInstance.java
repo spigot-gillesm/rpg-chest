@@ -1,10 +1,14 @@
 package com.gilles_m.rpg_chest.container.instance;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gilles_m.rpg_chest.Cooldown;
 import com.gilles_m.rpg_chest.container.Container;
 import com.gilles_m.rpg_chest.container.ContainerManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -15,7 +19,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ContainerInstance {
 
-	@JsonProperty("container")
+	@Getter
+	@JsonProperty("container-id")
 	private String containerId;
 
 	@JsonProperty("world")
@@ -31,8 +36,11 @@ public class ContainerInstance {
 	private int z;
 
 	@JsonProperty("face")
+	@JsonSerialize(using = InstanceSerialization.BlockFaceSerializer.class)
+	@JsonDeserialize(using = InstanceSerialization.BlockFaceDeserializer.class)
 	private BlockFace blockFace;
 
+	@JsonIgnore
 	private final Cooldown cooldown = new Cooldown();
 
 	public ContainerInstance() {
@@ -105,17 +113,20 @@ public class ContainerInstance {
 		InstanceManager.getInstance().remove(this);
 	}
 
+	@JsonIgnore
 	@NotNull
 	public Location getLocation() {
 		return new Location(Bukkit.getWorld(world), x, y, z);
 	}
 
+	@JsonIgnore
 	@NotNull
 	public Container getContainer() {
 		return ContainerManager.getInstance().getContainer(containerId)
 				.orElseThrow(() -> new IllegalStateException("A container instance is referring to a removed container"));
 	}
 
+	@JsonIgnore
 	@NotNull
 	public org.bukkit.block.Container getBukkitContainer() {
 		final var block = getLocation().getBlock();
@@ -127,8 +138,14 @@ public class ContainerInstance {
 		return (org.bukkit.block.Container) getLocation().getBlock().getState();
 	}
 
+	@JsonProperty("remaining-cooldown")
+	public double getRemainingCooldown() {
+		return cooldown.remainingTime();
+	}
+
+	@JsonIgnore
 	public boolean isOnCooldown() {
-		return cooldown.remainingTime() > 0;
+		return getRemainingCooldown() > 0;
 	}
 
 }
