@@ -2,6 +2,7 @@ package com.gilles_m.rpg_chest;
 
 import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import com.gilles_m.rpg_chest.event.ContainerOffCooldownEvent;
+import com.google.common.base.MoreObjects;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,8 +33,22 @@ public class Cooldown {
 		if(startedAt <= 0) {
 			return 0;
 		}
+		final var remainingTime = BigDecimal.valueOf(duration - (System.currentTimeMillis()  - startedAt) / 1000.0)
+				.doubleValue();
 
-		return BigDecimal.valueOf(duration - (System.currentTimeMillis()  - startedAt) / 1000.0).doubleValue();
+		if(remainingTime < 0) {
+			return 0;
+		}
+
+		return remainingTime;
+	}
+
+	public final String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("duration", duration)
+				.add("startedAt", startedAt)
+				.add("remainingTime", remainingTime())
+				.toString();
 	}
 
 }

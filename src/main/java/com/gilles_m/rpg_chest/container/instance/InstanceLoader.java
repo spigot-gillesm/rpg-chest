@@ -49,12 +49,25 @@ public class InstanceLoader {
 		if(instance == null) {
 			return Optional.empty();
 		}
+		final var cooldown = objectMapper.readTree(file).path("remaining-cooldown").asDouble();
+
+		if(cooldown > 0) {
+			instance.startCooldown(cooldown);
+		}
+		Formatter.info("instance: " + instance);
 
 		return Optional.of(instance);
 	}
 
 	public void saveAll() throws IOException {
 		Formatter.info("Saving container instances...");
+		final var folder = FileUtils.getResource("instances/");
+
+		//Clear the folder first
+		if(folder != null && folder.isDirectory()) {
+			Arrays.stream(folder.listFiles())
+					.forEach(File::delete);
+		}
 		for(final var instance : InstanceManager.getInstance().getRegisteredInstances()) {
 			save(instance);
 		}
@@ -70,7 +83,7 @@ public class InstanceLoader {
 		final var location = containerInstance.getLocation();
 
 		return containerInstance.getContainerId() + "_" + location.getWorld().getName() + "_" + location.getBlockX()
-				+ "_" + location.getBlockZ() + "_" + location.getBlockZ();
+				+ "_" + location.getBlockY() + "_" + location.getBlockZ();
 	}
 
 	public static InstanceLoader getInstance() {
