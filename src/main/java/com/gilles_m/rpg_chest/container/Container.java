@@ -35,7 +35,6 @@ public abstract class Container {
 	@JsonProperty("material")
 	private Material material;
 
-	@Getter
 	@JsonProperty("item-table")
 	private String itemTable;
 
@@ -44,10 +43,10 @@ public abstract class Container {
 	@JsonDeserialize(using = ContainerDeserializer.MaterialDeserializer.class)
 	private Metadata metadata;
 
-	//TODO: deserializer
 	@JsonIgnore
-	private Set<ContainerEvent> containerEvents = new HashSet<>();
+	private final Set<ContainerEvent> containerEvents = new HashSet<>();
 
+	@JsonIgnore
 	private final Random random = new SecureRandom();
 
 	@Override
@@ -59,6 +58,8 @@ public abstract class Container {
 				.add("metadata", metadata)
 				.toString();
 	}
+
+	public abstract void spawn(@NotNull Location location, @NotNull BlockFace blockFace);
 
 	/**
 	 * Returns a new instance of this container.
@@ -85,10 +86,10 @@ public abstract class Container {
 					//Pick random positions within the container to place items
 					for(final var item : items) {
 						var slot = random.nextInt(27);
+
 						while(inventory.getItem(slot) != null && (new ItemStack(Material.AIR)).isSimilar(inventory.getItem(slot))) {
 							slot = random.nextInt(27);
 						}
-
 						inventory.setItem(slot, item);
 					}
 					inventory.getViewers().forEach(humanEntity -> ((Player) humanEntity).updateInventory());
@@ -96,10 +97,7 @@ public abstract class Container {
 						" table: %s", id, itemTable)));
 	}
 
-	public abstract void spawn(@NotNull Location location, @NotNull BlockFace blockFace);
-
 	public void registerEvent(@NotNull final ContainerEvent containerEvent) {
-		Formatter.info("event: " + containerEvent);
 		containerEvents.add(containerEvent);
 	}
 
@@ -116,12 +114,13 @@ public abstract class Container {
 		@JsonProperty("display-name")
 		private String displayName;
 
-		/*@Getter
-		private ItemTable itemTable;*/
-
 		@Getter
 		@JsonProperty("is-despawning")
 		private boolean despawning;
+
+		@Getter
+		@JsonProperty("unbreakable")
+		private boolean unbreakable;
 
 		@Getter
 		@JsonProperty("cooldown")
@@ -136,6 +135,7 @@ public abstract class Container {
 			return MoreObjects.toStringHelper(this)
 					.add("displayName", displayName)
 					.add("despawning", despawning)
+					.add("unbreakable", unbreakable)
 					.add("cooldown", cooldown)
 					.add("cooldownPerPlayer", cooldownPerPlayer)
 					.toString();

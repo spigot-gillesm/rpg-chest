@@ -1,8 +1,10 @@
 package com.gilles_m.rpg_chest.listener;
 
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;
+import com.gilles_m.rpg_chest.event.ContainerCloseEvent;
 import com.gilles_m.rpg_chest.event.ContainerOffCooldownEvent;
 import com.gilles_m.rpg_chest.event.ContainerOpenEvent;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -16,6 +18,13 @@ public class ContainerListener implements Listener {
 			containerInstance.fillInventory();
 			containerInstance.startCooldown();
 			containerInstance.runEvents(ContainerEvent.Trigger.ON_OPEN);
+		}
+	}
+
+	@EventHandler
+	protected void onContainerClose(final ContainerCloseEvent event) {
+		if(event.getContainerInstance().getContainer().getMetadata().isDespawning()) {
+			event.getLocation().getBlock().setType(Material.AIR);
 		}
 	}
 
