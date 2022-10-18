@@ -1,8 +1,13 @@
 package com.gilles_m.rpg_chest.container_event.container_event_implementation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;
+import com.gilles_m.rpg_chest.item_table.RangeIntegerDeserializer;
 import com.gilles_m.rpg_chest.randomized_entity.RangeInteger;
 import com.github.spigot_gillesm.format_lib.Formatter;
+import com.google.common.base.MoreObjects;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -10,9 +15,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SpawnEntityEvent extends ContainerEvent {
 
+	@JsonProperty("entities")
+	@JsonDeserialize(contentUsing = RangeIntegerDeserializer.class)
 	private Map<String, RangeInteger> entities = new HashMap<>();
+
+	public SpawnEntityEvent() {
+		//Default constructor for Jackson
+	}
 
 	public SpawnEntityEvent(final Trigger trigger) {
 		super(trigger);
@@ -42,6 +54,13 @@ public class SpawnEntityEvent extends ContainerEvent {
 		}
 
 		return null;
+	}
+
+	public final String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("trigger", getTrigger())
+				.add("entities", entities.toString())
+				.toString();
 	}
 
 }

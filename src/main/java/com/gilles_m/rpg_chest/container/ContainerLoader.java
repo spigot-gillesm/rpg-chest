@@ -1,15 +1,22 @@
 package com.gilles_m.rpg_chest.container;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.gilles_m.rpg_chest.container.container_implementation.SimpleContainer;
+import com.gilles_m.rpg_chest.container_event.ContainerEvent;
+import com.gilles_m.rpg_chest.container_event.container_event_implementation.MessageEvent;
+import com.gilles_m.rpg_chest.container_event.container_event_implementation.SpawnEntityEvent;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class ContainerLoader {
@@ -56,7 +63,32 @@ public class ContainerLoader {
 		container.setId(file.getName().split("\\.")[0]);
 		container.setMetadata(metadata);
 
+		final var events = objectMapper.readTree(file).path("events").elements();
+		final List<String> eventNames = new ArrayList<>();
+		objectMapper.readTree(file).path("events")
+				.fieldNames()
+				.forEachRemaining(eventNames::add);
+
+		for(final var eventName : eventNames) {
+			if(events.hasNext()) {
+				loadEventFromFile(eventName, events.next()).ifPresent(container::registerEvent);
+			}
+		}
+
 		return Optional.of(container);
+	}
+
+	private Optional<ContainerEvent> loadEventFromFile(@NotNull final String eventType, @NotNull final JsonNode jsonNode)
+			throws JsonProcessingException {
+
+		if("spawn-entity".equalsIgnoreCase(eventType)) {
+			return Optional.of(objectMapper.readValue(jsonNode.toString(), SpawnEntityEvent.class));
+		} else if("message".equalsIgnoreCase(eventType)) {
+			return Optional.of(objectMapper.readValue(jsonNode.toString(), MessageEvent.class));
+		} else {
+			Formatter.error(String.format("Invalid event type: %s", eventType));
+			return Optional.empty();
+		}
 	}
 
 	public static ContainerLoader getInstance() {

@@ -54,7 +54,6 @@ public class InstanceLoader {
 		if(cooldown > 0) {
 			instance.startCooldown(cooldown);
 		}
-		Formatter.info("instance: " + instance);
 
 		return Optional.of(instance);
 	}

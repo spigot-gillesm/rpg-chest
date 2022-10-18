@@ -98,6 +98,17 @@ public abstract class Container {
 
 	public abstract void spawn(@NotNull Location location, @NotNull BlockFace blockFace);
 
+	public void registerEvent(@NotNull final ContainerEvent containerEvent) {
+		Formatter.info("event: " + containerEvent);
+		containerEvents.add(containerEvent);
+	}
+
+	public void runEvents(final ContainerEvent.Trigger trigger, @NotNull final Location location) {
+		containerEvents.stream()
+				.filter(event -> event.getTrigger() == trigger)
+				.forEach(event -> event.run(location));
+	}
+
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Metadata {
 
