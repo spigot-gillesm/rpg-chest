@@ -22,7 +22,7 @@ public class ItemTable {
 	private String id;
 
 	@JsonProperty("amount")
-	@JsonDeserialize(using = ItemTableDeserializer.RangeIntegerDeserializer.class)
+	@JsonDeserialize(using = RangeIntegerDeserializer.class)
 	private RangeInteger amount;
 
 	@Getter(AccessLevel.PACKAGE)

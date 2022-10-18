@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gilles_m.rpg_chest.Cooldown;
 import com.gilles_m.rpg_chest.container.Container;
 import com.gilles_m.rpg_chest.container.ContainerManager;
+import com.gilles_m.rpg_chest.container_event.ContainerEvent;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.google.common.base.MoreObjects;
 import lombok.Getter;
@@ -114,6 +115,10 @@ public class ContainerInstance {
 	 */
 	public void startCooldown() {
 		startCooldown(getContainer().getMetadata().getCooldown());
+	}
+
+	public void runEvents(final ContainerEvent.Trigger trigger) {
+		getContainer().runEvents(trigger, getLocation());
 	}
 
 	public void destroy() {
