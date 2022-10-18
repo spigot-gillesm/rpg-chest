@@ -2,7 +2,10 @@ package com.gilles_m.rpg_chest.container;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.gilles_m.rpg_chest.key.ContainerKey;
+import com.gilles_m.rpg_chest.key.KeyManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import org.bukkit.Material;
 
@@ -43,6 +46,17 @@ public class ContainerDeserializer {
 
 		private boolean isMaterialValid(final Material material) {
 			return material == Material.CHEST || material == Material.BARREL || material == Material.TRAPPED_CHEST;
+		}
+
+	}
+
+	public static class ContainerKeyDeserializer extends KeyDeserializer {
+
+		@Override
+		public ContainerKey deserializeKey(final String key, final DeserializationContext ctxt) throws IOException {
+			return KeyManager.getInstance()
+					.getKey(key)
+					.orElseThrow(() -> new IOException(String.format("Invalid key id: %s", key)));
 		}
 
 	}
