@@ -8,6 +8,7 @@ import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import com.gilles_m.rpg_chest.container.instance.InstanceManager;
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;
 import com.gilles_m.rpg_chest.item_table.TableManager;
+import com.gilles_m.rpg_chest.key.ContainerKey;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.google.common.base.MoreObjects;
 import lombok.Getter;
@@ -20,9 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Container {
@@ -38,26 +37,20 @@ public abstract class Container {
 	@JsonProperty("item-table")
 	private String itemTable;
 
+	@JsonProperty("keys")
+	@JsonDeserialize(keyUsing = ContainerDeserializer.ContainerKeyDeserializer.class)
+	private Map<ContainerKey, Integer> containerKeys = new HashMap<>();
+
+	@JsonIgnore
+	private final Set<ContainerEvent> containerEvents = new HashSet<>();
+
 	@Setter
 	@Getter
 	@JsonDeserialize(using = ContainerDeserializer.MaterialDeserializer.class)
 	private Metadata metadata;
 
 	@JsonIgnore
-	private final Set<ContainerEvent> containerEvents = new HashSet<>();
-
-	@JsonIgnore
 	private final Random random = new SecureRandom();
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("id", id)
-				.add("material", material)
-				.add("itemTable", itemTable)
-				.add("metadata", metadata)
-				.toString();
-	}
 
 	public abstract void spawn(@NotNull Location location, @NotNull BlockFace blockFace);
 
@@ -101,10 +94,30 @@ public abstract class Container {
 		containerEvents.add(containerEvent);
 	}
 
+	public void registerEvents(@NotNull final Collection<ContainerEvent> containerEvents) {
+		this.containerEvents.addAll(containerEvents);
+	}
+
+	public void addKey(@NotNull final ContainerKey containerKey, final int amount) {
+		containerKeys.put(containerKey, amount);
+	}
+
 	public void runEvents(final ContainerEvent.Trigger trigger, @NotNull final Location location) {
 		containerEvents.stream()
 				.filter(event -> event.getTrigger() == trigger)
 				.forEach(event -> event.run(location));
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("id", id)
+				.add("material", material)
+				.add("itemTable", itemTable)
+				.add("metadata", metadata)
+				.add("containerKeys", containerKeys.toString())
+				.add("containerEvents", containerEvents.toString())
+				.toString();
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)

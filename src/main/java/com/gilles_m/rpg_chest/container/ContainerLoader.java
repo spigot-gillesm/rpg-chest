@@ -14,10 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ContainerLoader {
 
@@ -62,20 +59,29 @@ public class ContainerLoader {
 		}
 		container.setId(file.getName().split("\\.")[0]);
 		container.setMetadata(metadata);
+		container.registerEvents(loadContainerEventsFromFile(file));
 
+		Formatter.info("Container: " + container);
+
+		return Optional.of(container);
+	}
+
+	private Set<ContainerEvent> loadContainerEventsFromFile(@NotNull final File file) throws IOException {
 		final var events = objectMapper.readTree(file).path("events").elements();
+		final Set<ContainerEvent> containerEvents = new HashSet<>();
 		final List<String> eventNames = new ArrayList<>();
+
 		objectMapper.readTree(file).path("events")
 				.fieldNames()
 				.forEachRemaining(eventNames::add);
 
 		for(final var eventName : eventNames) {
 			if(events.hasNext()) {
-				loadEventFromFile(eventName, events.next()).ifPresent(container::registerEvent);
+				loadEventFromFile(eventName, events.next()).ifPresent(containerEvents::add);
 			}
 		}
 
-		return Optional.of(container);
+		return containerEvents;
 	}
 
 	private Optional<ContainerEvent> loadEventFromFile(@NotNull final String eventType, @NotNull final JsonNode jsonNode)
@@ -90,6 +96,28 @@ public class ContainerLoader {
 			return Optional.empty();
 		}
 	}
+
+	/*private Set<ContainerKey> loadContainerKeysFromFile(@NotNull final File file) throws IOException {
+		final var keys = objectMapper.readTree(file).path("keys").elements();
+		final Map<ContainerKey, Integer> containerKeys = new HashMap<>();
+		final List<String> keyNames = new ArrayList<>();
+
+		objectMapper.readTree(file).path("keys")
+				.fieldNames()
+				.forEachRemaining(keyNames::add);
+
+		for(final var keyName : keyNames) {
+			if(keys.hasNext()) {
+				final var key
+				Formatter.info("keys: " + keys);
+				KeyManager.getInstance()
+						.getKey(keyName)
+						.ifPresentOrElse(key -> {
+
+						}, () -> Formatter.error(String.format()));
+			}
+		}
+	}*/
 
 	public static ContainerLoader getInstance() {
 		return INSTANCE;
