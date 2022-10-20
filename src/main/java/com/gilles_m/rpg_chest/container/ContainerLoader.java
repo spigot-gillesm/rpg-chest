@@ -39,8 +39,7 @@ public class ContainerLoader {
 					.filter(f -> !f.isDirectory())
 					.forEach(f -> {
 								try {
-									loadContainerFromFile(f)
-											.ifPresent(manager::register);
+									loadContainerFromFile(f).ifPresent(manager::register);
 								} catch (final IOException e) {
 									Formatter.error(String.format("Unable to load container %s: Invalid data.", f.getName()));
 								}
@@ -61,8 +60,6 @@ public class ContainerLoader {
 		container.setMetadata(metadata);
 		container.registerEvents(loadContainerEventsFromFile(file));
 
-		Formatter.info("Container: " + container);
-
 		return Optional.of(container);
 	}
 
@@ -77,6 +74,7 @@ public class ContainerLoader {
 
 		for(final var eventName : eventNames) {
 			if(events.hasNext()) {
+				//TODO: Check that each mob is valid or send an error
 				loadEventFromFile(eventName, events.next()).ifPresent(containerEvents::add);
 			}
 		}
@@ -96,28 +94,6 @@ public class ContainerLoader {
 			return Optional.empty();
 		}
 	}
-
-	/*private Set<ContainerKey> loadContainerKeysFromFile(@NotNull final File file) throws IOException {
-		final var keys = objectMapper.readTree(file).path("keys").elements();
-		final Map<ContainerKey, Integer> containerKeys = new HashMap<>();
-		final List<String> keyNames = new ArrayList<>();
-
-		objectMapper.readTree(file).path("keys")
-				.fieldNames()
-				.forEachRemaining(keyNames::add);
-
-		for(final var keyName : keyNames) {
-			if(keys.hasNext()) {
-				final var key
-				Formatter.info("keys: " + keys);
-				KeyManager.getInstance()
-						.getKey(keyName)
-						.ifPresentOrElse(key -> {
-
-						}, () -> Formatter.error(String.format()));
-			}
-		}
-	}*/
 
 	public static ContainerLoader getInstance() {
 		return INSTANCE;

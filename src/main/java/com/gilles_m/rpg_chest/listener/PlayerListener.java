@@ -3,6 +3,7 @@ package com.gilles_m.rpg_chest.listener;
 import com.gilles_m.rpg_chest.container.instance.InstanceManager;
 import com.gilles_m.rpg_chest.event.ContainerCloseEvent;
 import com.gilles_m.rpg_chest.event.ContainerOpenEvent;
+import com.github.spigot_gillesm.format_lib.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -32,12 +33,24 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		InstanceManager.getInstance().getContainerInstance(block.getLocation())
-				.ifPresent(containerInstance -> {
-					final ContainerOpenEvent containerEvent = new ContainerOpenEvent(containerInstance, event.getPlayer());
-					Bukkit.getServer().getPluginManager().callEvent(containerEvent);
+				.ifPresent(instance -> {
+					final var player = event.getPlayer();
 
-					if(containerEvent.isCancelled()) {
+					if(instance.isLocked()) {
+						if(instance.canOpen(player)) {
+							instance.unlock(player);
+						} else {
+							Formatter.tell(player, "&cYou do not have the required keys to open this container:");
+							instance.displayRequiredKeys(player);
+						}
 						event.setCancelled(true);
+					} else {
+						final ContainerOpenEvent containerEvent = new ContainerOpenEvent(instance, player);
+						Bukkit.getServer().getPluginManager().callEvent(containerEvent);
+
+						if(containerEvent.isCancelled()) {
+							event.setCancelled(true);
+						}
 					}
 				});
 	}
@@ -51,10 +64,11 @@ public class PlayerListener implements Listener {
 						event.setCancelled(true);
 						return;
 					}
-					if(!instance.isOnCooldown()) {
+					//Do not fill the container's inventory if it is still on cooldown or locked
+					if(!instance.isOnCooldown() && !instance.isLocked()) {
 						instance.fillInventory();
-						instance.startCooldown();
 					}
+					instance.startCooldown();
 				});
 	}
 
