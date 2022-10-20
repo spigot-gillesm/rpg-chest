@@ -37,6 +37,7 @@ public abstract class Container {
 	@JsonProperty("item-table")
 	private String itemTable;
 
+	@Getter
 	@JsonProperty("keys")
 	@JsonDeserialize(keyUsing = ContainerDeserializer.ContainerKeyDeserializer.class)
 	private Map<ContainerKey, Integer> containerKeys = new HashMap<>();
@@ -106,6 +107,22 @@ public abstract class Container {
 		containerEvents.stream()
 				.filter(event -> event.getTrigger() == trigger)
 				.forEach(event -> event.run(location));
+	}
+
+	/**
+	 * Check if a player meets the conditions to open the container.
+	 *
+	 * @param player the player trying to open the container
+	 * @return true if the player can open it
+	 */
+	public boolean canOpen(@NotNull final Player player) {
+		for(final var entrySet : containerKeys.entrySet()) {
+			if(!player.getInventory().containsAtLeast(entrySet.getKey().getItemStack(), entrySet.getValue())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override

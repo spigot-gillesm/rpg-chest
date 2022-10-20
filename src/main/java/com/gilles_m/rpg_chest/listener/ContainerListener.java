@@ -1,10 +1,8 @@
 package com.gilles_m.rpg_chest.listener;
 
-import com.gilles_m.rpg_chest.container_event.ContainerEvent;
 import com.gilles_m.rpg_chest.event.ContainerCloseEvent;
 import com.gilles_m.rpg_chest.event.ContainerOffCooldownEvent;
 import com.gilles_m.rpg_chest.event.ContainerOpenEvent;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -12,19 +10,19 @@ public class ContainerListener implements Listener {
 
 	@EventHandler
 	protected void onContainerOpen(final ContainerOpenEvent event) {
-		final var containerInstance = event.getContainerInstance();
+		final var instance = event.getContainerInstance();
 
-		if(!containerInstance.isOnCooldown()) {
-			containerInstance.fillInventory();
-			containerInstance.startCooldown();
-			containerInstance.runEvents(ContainerEvent.Trigger.ON_OPEN);
+		if(!instance.isOnCooldown()) {
+			instance.open();
 		}
 	}
 
 	@EventHandler
 	protected void onContainerClose(final ContainerCloseEvent event) {
-		if(event.getContainerInstance().getContainer().getMetadata().isDespawning()) {
-			event.getLocation().getBlock().setType(Material.AIR);
+		final var instance = event.getContainerInstance();
+
+		if(instance.getContainer().getMetadata().isDespawning() && instance.isEmpty()) {
+			instance.despawn();
 		}
 	}
 
@@ -35,6 +33,7 @@ public class ContainerListener implements Listener {
 		if(event.getLocation().getBlock().getType() != instance.getContainer().getMaterial()) {
 			instance.spawn();
 		}
+		instance.lock();
 	}
 
 }

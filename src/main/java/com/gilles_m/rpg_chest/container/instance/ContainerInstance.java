@@ -14,7 +14,10 @@ import com.google.common.base.MoreObjects;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,6 +47,10 @@ public class ContainerInstance {
 	@JsonDeserialize(using = InstanceSerialization.BlockFaceDeserializer.class)
 	private BlockFace blockFace;
 
+	@Getter
+	@JsonProperty("is-locked")
+	private boolean locked = false;
+
 	@JsonIgnore
 	private final Cooldown cooldown = new Cooldown();
 
@@ -64,6 +71,12 @@ public class ContainerInstance {
 		this.y = location.getBlockY();
 		this.z = location.getBlockZ();
 		this.blockFace = blockFace;
+	}
+
+	public void open() {
+		fillInventory();
+		startCooldown();
+		runEvents(ContainerEvent.Trigger.ON_OPEN);
 	}
 
 	/**
@@ -90,6 +103,15 @@ public class ContainerInstance {
 		}
 		bukkitContainer.setCustomName(Formatter.colorize(container.getMetadata().getDisplayName()));
 		bukkitContainer.update();
+
+		lock();
+	}
+
+	/**
+	 * Remove the container from the world (but not from the system).
+	 */
+	public void despawn() {
+		getLocation().getBlock().setType(Material.AIR);
 	}
 
 	public void fillInventory() {
@@ -119,6 +141,41 @@ public class ContainerInstance {
 
 	public void runEvents(final ContainerEvent.Trigger trigger) {
 		getContainer().runEvents(trigger, getLocation());
+	}
+
+	public void lock() {
+		if(!getContainer().getContainerKeys().isEmpty()) {
+			this.locked = true;
+		}
+	}
+
+	/**
+	 * Unlock this container instance by consuming all the required key from the player's inventory.
+	 *
+	 * @param player the player unlocking the container instance
+	 */
+	public void unlock(@NotNull final Player player) {
+		final var keys = getContainer().getContainerKeys();
+
+		if(keys.isEmpty()) {
+			return;
+		}
+		getContainer().getContainerKeys()
+				.forEach((key, amount) -> {
+					final var copy = key.getItemStack().clone();
+					copy.setAmount(amount);
+					player.getInventory().removeItem(copy);
+				});
+		this.locked = false;
+
+		player.getWorld().playSound(player, Sound.BLOCK_WOODEN_TRAPDOOR_OPEN,1, 0.85F);
+	}
+
+	public void displayRequiredKeys(@NotNull final Player player) {
+		getContainer().getContainerKeys()
+				.forEach((key, amount) -> Formatter.tell(player, String.format("&7* %s &7x &9%d",
+						key.getItemStack().getItemMeta().getDisplayName(),
+						amount)));
 	}
 
 	public void destroy() {
@@ -160,6 +217,22 @@ public class ContainerInstance {
 		return getRemainingCooldown() > 0;
 	}
 
+	@JsonIgnore
+	public boolean isEmpty() {
+		return getBukkitContainer().getInventory().isEmpty();
+	}
+
+	/**
+	 * Check if a player meets the conditions to open this container instance.
+	 *
+	 * @param player the player trying to open the container instance
+	 * @return true if the player can open this container instance
+	 */
+	@JsonIgnore
+	public boolean canOpen(@NotNull final Player player) {
+		return getContainer().canOpen(player);
+	}
+
 	public final String toString() {
 		return MoreObjects.toStringHelper(this)
 				.add("containerId", containerId)
@@ -168,6 +241,7 @@ public class ContainerInstance {
 				.add("y", y)
 				.add("z", z)
 				.add("cooldown", cooldown.toString())
+				.add("locked", locked)
 				.toString();
 	}
 
