@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.gilles_m.rpg_chest.Cooldown;
+import com.gilles_m.rpg_chest.util.Cooldown;
 import com.gilles_m.rpg_chest.container.Container;
 import com.gilles_m.rpg_chest.container.ContainerManager;
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;

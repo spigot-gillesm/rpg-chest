@@ -1,5 +1,6 @@
-package com.gilles_m.rpg_chest;
+package com.gilles_m.rpg_chest.util;
 
+import com.gilles_m.rpg_chest.RPGChest;
 import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import com.gilles_m.rpg_chest.event.ContainerOffCooldownEvent;
 import com.google.common.base.MoreObjects;

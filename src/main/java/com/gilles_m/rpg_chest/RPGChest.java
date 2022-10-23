@@ -6,6 +6,7 @@ import com.gilles_m.rpg_chest.item_table.TableLoader;
 import com.gilles_m.rpg_chest.key.KeyLoader;
 import com.gilles_m.rpg_chest.listener.ContainerListener;
 import com.gilles_m.rpg_chest.listener.PlayerListener;
+import com.gilles_m.rpg_chest.util.Dependency;
 import com.github.spigot_gillesm.command_lib.CommandLib;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -27,6 +28,7 @@ public class RPGChest extends JavaPlugin {
 		Formatter.info("&aLoading RPGChest...");
 		CommandLib.initialize(plugin);
 
+		Dependency.getInstance().load();
 		KeyLoader.getInstance().load();
 		TableLoader.getInstance().load();
 		ContainerLoader.getInstance().load();
