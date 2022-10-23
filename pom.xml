@@ -23,6 +23,9 @@
         <file-utils.version>1.0.0</file-utils.version>
         <item-lib.version>1.0.0</item-lib.version>
         <command-lib.version>1.0.0</command-lib.version>
+        <mythic-mobs.version>5.1.4</mythic-mobs.version>
+        <mmoitems.version>6.8.2</mmoitems.version>
+        <mythic-lib.version>1.4.2</mythic-lib.version>
     </properties>
 
     <repositories>
@@ -35,6 +38,13 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+
+        <repository>
+            <id>nexus</id>
+            <name>Lumine Releases</name>
+            <url>https://mvn.lumine.io/repository/maven-public/</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -88,6 +98,27 @@
             <artifactId>command-lib</artifactId>
             <version>${command-lib.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.lumine.mythic</groupId>
+            <artifactId>mythicmobs</artifactId>
+            <version>${mythic-mobs.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>mmoitems</artifactId>
+            <version>${mmoitems.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.lumine.mythic</groupId>
+            <artifactId>lib</artifactId>
+            <version>${mythic-lib.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -127,6 +158,9 @@
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
                                 <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/LICENSE</exclude>
+                                <exclude>META-INF/NOTICE</exclude>
+                                <exclude>META-INF/services/com.fasterxml.*</exclude>
                             </excludes>
                         </filter>
                     </filters>

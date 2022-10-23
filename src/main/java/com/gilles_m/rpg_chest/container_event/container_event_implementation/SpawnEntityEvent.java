@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;
 import com.gilles_m.rpg_chest.item_table.RangeIntegerDeserializer;
 import com.gilles_m.rpg_chest.randomized_entity.RangeInteger;
+import com.gilles_m.rpg_chest.util.Dependency;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.google.common.base.MoreObjects;
 import org.bukkit.Location;
@@ -34,14 +35,20 @@ public class SpawnEntityEvent extends ContainerEvent {
 	public void run(@NotNull final Location location) {
 		for(final var entrySet : entities.entrySet()) {
 			final var amount = entrySet.getValue().getInt();
-			final var entity = getEntity(entrySet.getKey());
+			final var entityName = entrySet.getKey();
 
-			if(entity == null) {
-				Formatter.warning(String.format("Could not spawn %s at location %s", entrySet.getKey(), location));
-				continue;
-			}
-			for(int i = 0; i < amount; i++) {
-				location.getWorld().spawnEntity(location, entity);
+			if(entityName.toLowerCase().startsWith("mm:") || entityName.toLowerCase().startsWith("mythicmobs:")) {
+				Dependency.getInstance().spawnMythicMob(entityName.split(":")[1], location, amount);
+			} else {
+				final var entity = getEntity(entityName);
+
+				if(entity == null) {
+					Formatter.warning(String.format("Could not spawn %s at location %s", entrySet.getKey(), location));
+					continue;
+				}
+				for (int i = 0; i < amount; i++) {
+					location.getWorld().spawnEntity(location, entity);
+				}
 			}
 		}
 	}
