@@ -179,6 +179,7 @@ public class ContainerInstance {
 	}
 
 	public void destroy() {
+		getLocation().getBlock().setType(Material.AIR);
 		InstanceManager.getInstance().remove(this);
 	}
 

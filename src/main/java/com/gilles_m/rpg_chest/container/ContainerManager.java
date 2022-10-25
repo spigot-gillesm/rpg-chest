@@ -1,5 +1,9 @@
 package com.gilles_m.rpg_chest.container;
 
+import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
+import com.gilles_m.rpg_chest.container.instance.InstanceManager;
+import com.github.spigot_gillesm.file_utils.FileUtils;
+import com.github.spigot_gillesm.format_lib.Formatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -27,12 +31,57 @@ public class ContainerManager {
 		return registeredContainers.stream().filter(container -> container.getId().equals(id)).findFirst();
 	}
 
+	/**
+	 * Delete the specified container from the server and the files.
+	 *
+	 * @param id the container id
+	 * @param clearInstances whether to clear its existing instances or not
+	 * @return true if the container exists
+	 */
+	public boolean deleteContainer(@NotNull final String id, final boolean clearInstances) {
+		final var container = getContainer(id);
+
+		if(container.isEmpty()) {
+			return false;
+		} else {
+			if(clearInstances) {
+				InstanceManager.getInstance().getContainerInstances(container.get())
+						.forEach(ContainerInstance::destroy);
+			}
+			registeredContainers.remove(container.get());
+
+			if(!deleteContainerFile(id)) {
+				Formatter.error(String.format("Could not delete %s configuration file", id));
+			}
+
+			return true;
+		}
+	}
+
+	private boolean deleteContainerFile(final String id) {
+		return FileUtils.getResource("containers/" + id + ".yml").delete();
+	}
+
+	/**
+	 * Delete the specified container from the server and the files and clear its existing instances.
+	 *
+	 * @param id the container id
+	 * @return true if the container exists
+	 */
+	public boolean deleteContainer(@NotNull final String id) {
+		return deleteContainer(id, true);
+	}
+
 	public int size() {
 		return registeredContainers.size();
 	}
 
 	public void clear() {
 		registeredContainers.clear();
+	}
+
+	public boolean isContainer(@NotNull final String id) {
+		return getContainer(id).isPresent();
 	}
 
 	public static ContainerManager getInstance() {

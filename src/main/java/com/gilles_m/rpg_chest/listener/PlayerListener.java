@@ -44,6 +44,7 @@ public class PlayerListener implements Listener {
 							instance.displayRequiredKeys(player);
 						}
 						event.setCancelled(true);
+
 					} else {
 						final ContainerOpenEvent containerEvent = new ContainerOpenEvent(instance, player);
 						Bukkit.getServer().getPluginManager().callEvent(containerEvent);
