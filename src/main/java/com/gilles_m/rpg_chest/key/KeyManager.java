@@ -1,5 +1,6 @@
 package com.gilles_m.rpg_chest.key;
 
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,16 @@ public class KeyManager {
 		return registeredKeys.stream()
 				.filter(key -> key.getItemStack().isSimilar(itemStack))
 				.findFirst();
+	}
+
+	/**
+	 * Look for keys to drop from the given source at the specified location.
+	 *
+	 * @param sourceId the source id
+	 * @param location the location
+	 */
+	public void dropKeys(@NotNull final String sourceId, @NotNull final Location location) {
+		registeredKeys.forEach(key -> key.drop(sourceId, location));
 	}
 
 	public int size() {
