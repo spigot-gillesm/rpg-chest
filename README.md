@@ -16,3 +16,7 @@ If you encounter any issue, please submit a new ticket in the Issue section of t
 ## Wiki
 
 You can learn about the usage of RPGChest [here](https://gilles1348.gitbook.io/rpgchest/).
+
+## Code
+
+The code uses a few of my own libraries to keep things simpler. You can find their implementations [here](https://github.com/spigot-gillesm/spigot-simple-libs)
