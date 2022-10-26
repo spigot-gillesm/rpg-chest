@@ -3,6 +3,7 @@ package com.gilles_m.rpg_chest.listener;
 import com.gilles_m.rpg_chest.container.instance.InstanceManager;
 import com.gilles_m.rpg_chest.event.ContainerCloseEvent;
 import com.gilles_m.rpg_chest.event.ContainerOpenEvent;
+import com.gilles_m.rpg_chest.key.KeyManager;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -59,7 +60,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	protected void onPlayerBreakBlock(final BlockBreakEvent event) {
 		//Check if a player has broken a rpg chest
-		InstanceManager.getInstance().getContainerInstance(event.getBlock().getLocation())
+		final var block = event.getBlock();
+		InstanceManager.getInstance().getContainerInstance(block.getLocation())
 				.ifPresent(instance -> {
 					if(instance.getContainer().getMetadata().isUnbreakable()) {
 						event.setCancelled(true);
@@ -71,6 +73,9 @@ public class PlayerListener implements Listener {
 					}
 					instance.startCooldown();
 				});
+
+		//Check for keys to drop from the broken block
+		KeyManager.getInstance().dropKeys(block.getType().toString(), block.getLocation());
 	}
 
 	@EventHandler
