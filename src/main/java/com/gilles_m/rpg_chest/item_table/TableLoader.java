@@ -3,11 +3,13 @@ package com.gilles_m.rpg_chest.item_table;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.gilles_m.rpg_chest.randomized_entity.RangeInteger;
+import com.gilles_m.rpg_chest.util.Dependency;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.github.spigot_gillesm.item_lib.YamlItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -38,7 +40,7 @@ public class TableLoader {
 					.forEach(f -> {
 								try {
 									loadItemTableFromFile(f)
-											.ifPresent(manager::registerTable);
+											.ifPresent(manager::register);
 								} catch (final IOException e) {
 									Formatter.error(String.format("Unable to load item table %s: Invalid data", f.getName()));
 									e.printStackTrace();
@@ -80,17 +82,28 @@ public class TableLoader {
 
 	private Optional<ItemSection> loadItemSection(@NotNull final ConfigurationSection configurationSection, final String id) {
 		try {
-			return Optional.of(new ItemSection(
-					YamlItem.fromConfiguration(configurationSection).getItemFromFile().make().getItemStack(),
+			return loadItemStackFromFile(configurationSection).map(itemStack -> new ItemSection(
+					itemStack,
 					RangeInteger.fromString(configurationSection.getString("amount", "1")),
-					configurationSection.getInt("chance", 1)
-			));
+					configurationSection.getInt("chance", 1))
+			).or(() -> {
+				Formatter.error(String.format("Could not load item in item section %s", id));
+				return Optional.empty();
+			});
 		} catch (final IllegalArgumentException exception) {
 			Formatter.warning(String.format("Invalid item section data in %s item table in section %s", id,
 					configurationSection.getName()));
 		}
 
 		return Optional.empty();
+	}
+
+	private Optional<ItemStack> loadItemStackFromFile(@NotNull final ConfigurationSection configurationSection) {
+		if(configurationSection.contains("item")) {
+			return Dependency.getInstance().getItemStackFromString(configurationSection.getString("item"));
+		} else {
+			return Optional.of(YamlItem.fromConfiguration(configurationSection).getItemFromFile().make().getItemStack());
+		}
 	}
 
 	public static TableLoader getInstance() {
