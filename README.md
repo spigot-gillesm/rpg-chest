@@ -5,7 +5,7 @@ This is the official repository of RPGChest.
 ## Installation
 
 1. Download the latest release of RPGChest in the Releases section of this repository.
-2. Drag the *.jar file in your server plugins folder.
+2. Drag the .jar file in your server plugins folder.
 3. If your server is running, stop it using the 'stop' command and start it again.
 4. RPGChest should be loaded and a message should be displayed to the server console.
 
