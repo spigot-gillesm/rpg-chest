@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,14 +31,10 @@ public class ContainerKey {
 		this.itemStack = itemStack;
 	}
 
-	public void drop(@NotNull final LivingEntity entity) {
-		final var name = entity.getType().toString();
-
+	public void drop(@NotNull final String sourceId, @NotNull final Location location) {
 		entityDrops.stream()
-				.filter(entityDrop -> entityDrop.source.equals(name))
-				.forEach(entityDrop -> entityDrop.drop(entity.getLocation(), itemStack));
-
-		//TODO: MM integrations
+				.filter(entityDrop -> entityDrop.source.equals(sourceId))
+				.forEach(entityDrop -> entityDrop.drop(location, itemStack));
 	}
 
 	public void addDrop(@NotNull final Drop drop) {
