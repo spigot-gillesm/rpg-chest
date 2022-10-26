@@ -15,4 +15,4 @@ If you encounter any issue, please submit a new ticket in the Issue section of t
 
 ## Wiki
 
-You can learn about the usage of RPGChest here.
+You can learn about the usage of RPGChest [here](https://gilles1348.gitbook.io/rpgchest/).
