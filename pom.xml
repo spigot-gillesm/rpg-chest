@@ -6,7 +6,7 @@
 
     <groupId>com.gilles_m</groupId>
     <artifactId>rpg-chest</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>RPGChest</name>
     <packaging>jar</packaging>
 

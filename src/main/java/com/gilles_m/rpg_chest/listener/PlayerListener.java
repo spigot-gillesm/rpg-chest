@@ -80,12 +80,21 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	protected void onPlayerCloseInventory(final InventoryCloseEvent event) {
-		InstanceManager.getInstance().getContainerInstance(
-				event.getPlayer().getOpenInventory().getTopInventory().getHolder().getInventory().getLocation()
-		).ifPresent(instance ->
-				Bukkit.getServer().getPluginManager()
-						.callEvent(new ContainerCloseEvent(instance, (Player) event.getPlayer()))
-		);
+		final var holder = event.getPlayer().getOpenInventory().getTopInventory().getHolder();
+
+		if(holder == null) {
+			return;
+		}
+		final var location = holder.getInventory().getLocation();
+
+		if(location == null) {
+			return;
+		}
+		InstanceManager.getInstance().getContainerInstance(location)
+				.ifPresent(instance -> Bukkit.getServer().getPluginManager().callEvent(
+								new ContainerCloseEvent(instance, (Player) event.getPlayer())
+						)
+				);
 	}
 
 }
