@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gilles_m.rpg_chest.container.instance.ContainerInstance;
 import com.gilles_m.rpg_chest.container.instance.InstanceManager;
 import com.gilles_m.rpg_chest.container_event.ContainerEvent;
+import com.gilles_m.rpg_chest.item_table.ItemTableDeserializer;
 import com.gilles_m.rpg_chest.item_table.TableManager;
 import com.gilles_m.rpg_chest.key.ContainerKey;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -35,6 +36,7 @@ public abstract class Container {
 	private Material material;
 
 	@JsonProperty("item-table")
+	@JsonDeserialize(using = ItemTableDeserializer.class)
 	private String itemTable;
 
 	@Getter

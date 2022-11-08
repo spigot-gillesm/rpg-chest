@@ -27,7 +27,10 @@ public class ContainerManager {
 		registeredContainers.add(container);
 	}
 
-	public Optional<Container> getContainer(@NotNull final String id) {
+	public Optional<Container> getContainer(final String id) {
+		if(id == null) {
+			return Optional.empty();
+		}
 		return registeredContainers.stream().filter(container -> container.getId().equals(id)).findFirst();
 	}
 

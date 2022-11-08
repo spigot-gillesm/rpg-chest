@@ -4,15 +4,14 @@ import com.gilles_m.rpg_chest.container.Container;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InstanceManager {
 
 	private static final InstanceManager INSTANCE = new InstanceManager();
+
+	private static final Set<ContainerInstance> IMMUTABLE_EMPTY_SET = Collections.emptySet();
 
 	private final Set<ContainerInstance> registeredInstances = new HashSet<>();
 
@@ -28,16 +27,22 @@ public class InstanceManager {
 				.findFirst();
 	}
 
-	public Set<ContainerInstance> getContainerInstances(@NotNull final String containerId) {
+	public Set<ContainerInstance> getContainerInstances(final String containerId) {
+		if(containerId == null) {
+			return IMMUTABLE_EMPTY_SET;
+		}
 		return registeredInstances.stream()
 				.filter(instance -> instance.getContainerId().equals(containerId))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toUnmodifiableSet());
 	}
 
-	public Set<ContainerInstance> getContainerInstances(@NotNull final Container container) {
+	public Set<ContainerInstance> getContainerInstances(final Container container) {
+		if(container == null) {
+			return IMMUTABLE_EMPTY_SET;
+		}
 		return registeredInstances.stream()
 				.filter(instance -> instance.getContainer().equals(container))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	public void remove(@NotNull final ContainerInstance containerInstance) {

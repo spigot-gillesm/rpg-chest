@@ -1,7 +1,5 @@
 package com.gilles_m.rpg_chest.key;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.gilles_m.rpg_chest.randomized_entity.RangeInteger;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -17,8 +15,6 @@ import java.util.Set;
 public class KeyLoader {
 
 	private static final KeyLoader INSTANCE = new KeyLoader();
-
-	private final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
 	private KeyLoader() { }
 

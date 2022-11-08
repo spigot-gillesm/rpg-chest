@@ -3,6 +3,8 @@ package com.gilles_m.rpg_chest.command;
 import com.gilles_m.rpg_chest.container.ContainerLoader;
 import com.gilles_m.rpg_chest.item_table.TableLoader;
 import com.gilles_m.rpg_chest.key.KeyLoader;
+import com.gilles_m.rpg_chest.util.Dependency;
+import com.gilles_m.rpg_chest.world.configuration.WorldChestConfigurationLoader;
 import com.github.spigot_gillesm.command_lib.MainCommand;
 import com.github.spigot_gillesm.command_lib.SimpleCommand;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -52,8 +54,10 @@ public class RPGChestMainCommand extends SimpleCommand {
 				return;
 			}
 			Formatter.tell(commandSender, "Reloading plugin...");
+			Dependency.getInstance().load();
 			KeyLoader.getInstance().load();
 			TableLoader.getInstance().load();
+			WorldChestConfigurationLoader.getInstance().load();
 			ContainerLoader.getInstance().load();
 			Formatter.tell(commandSender, "&aDone!");
 		}

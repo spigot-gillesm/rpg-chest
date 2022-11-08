@@ -30,6 +30,9 @@ public class TableManager {
 	 * @return an optional containing the item table
 	 */
 	public Optional<ItemTable> getItemTable(final String id) {
+		if(id == null) {
+			return Optional.empty();
+		}
 		return registeredTables.stream().filter(table -> table.getId().equals(id)).findFirst();
 	}
 
