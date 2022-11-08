@@ -10,7 +10,6 @@ import com.gilles_m.rpg_chest.container_event.container_event_implementation.Mes
 import com.gilles_m.rpg_chest.container_event.container_event_implementation.SpawnEntityEvent;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class ContainerLoader {
 		Formatter.info(String.format("Loaded %d container(s)", manager.size()));
 	}
 
-	private Optional<Container> loadContainerFromFile(@NotNull final File file) throws IOException {
+	private Optional<Container> loadContainerFromFile(final File file) throws IOException {
 		final var container = objectMapper.readValue(file, SimpleContainer.class);
 		final var metadata = objectMapper.readValue(file, Container.Metadata.class);
 
@@ -63,7 +62,7 @@ public class ContainerLoader {
 		return Optional.of(container);
 	}
 
-	private Set<ContainerEvent> loadContainerEventsFromFile(@NotNull final File file) throws IOException {
+	private Set<ContainerEvent> loadContainerEventsFromFile(final File file) throws IOException {
 		final var events = objectMapper.readTree(file).path("events").elements();
 		final Set<ContainerEvent> containerEvents = new HashSet<>();
 		final List<String> eventNames = new ArrayList<>();
@@ -82,7 +81,7 @@ public class ContainerLoader {
 		return containerEvents;
 	}
 
-	private Optional<ContainerEvent> loadEventFromFile(@NotNull final String eventType, @NotNull final JsonNode jsonNode)
+	private Optional<ContainerEvent> loadEventFromFile(final String eventType, final JsonNode jsonNode)
 			throws JsonProcessingException {
 
 		if("spawn-entity".equalsIgnoreCase(eventType)) {

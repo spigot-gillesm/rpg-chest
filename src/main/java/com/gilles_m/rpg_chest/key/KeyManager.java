@@ -25,13 +25,19 @@ public class KeyManager {
 		registeredKeys.addAll(containerKeys);
 	}
 
-	public Optional<ContainerKey> getKey(@NotNull final String id) {
+	public Optional<ContainerKey> getKey(final String id) {
+		if(id == null) {
+			return Optional.empty();
+		}
 		return registeredKeys.stream()
 				.filter(key -> key.getId().equals(id))
 				.findFirst();
 	}
 
-	public Optional<ContainerKey> getKey(@NotNull final ItemStack itemStack) {
+	public Optional<ContainerKey> getKey(final ItemStack itemStack) {
+		if(itemStack == null) {
+			return Optional.empty();
+		}
 		return registeredKeys.stream()
 				.filter(key -> key.getItemStack().isSimilar(itemStack))
 				.findFirst();
