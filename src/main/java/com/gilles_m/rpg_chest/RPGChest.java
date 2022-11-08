@@ -7,7 +7,9 @@ import com.gilles_m.rpg_chest.key.KeyLoader;
 import com.gilles_m.rpg_chest.listener.ContainerListener;
 import com.gilles_m.rpg_chest.listener.EntityListener;
 import com.gilles_m.rpg_chest.listener.PlayerListener;
+import com.gilles_m.rpg_chest.listener.WorldListener;
 import com.gilles_m.rpg_chest.util.Dependency;
+import com.gilles_m.rpg_chest.world.configuration.WorldChestConfigurationLoader;
 import com.github.spigot_gillesm.command_lib.CommandLib;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
@@ -33,6 +35,7 @@ public class RPGChest extends JavaPlugin {
 		KeyLoader.getInstance().load();
 		TableLoader.getInstance().load();
 		ContainerLoader.getInstance().load();
+		WorldChestConfigurationLoader.getInstance().load();
 		InstanceLoader.getInstance().load();
 	}
 
@@ -43,6 +46,7 @@ public class RPGChest extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new ContainerListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
 
 		Formatter.info("&aDone!");
 	}
