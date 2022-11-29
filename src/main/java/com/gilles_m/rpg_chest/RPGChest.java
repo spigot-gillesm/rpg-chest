@@ -2,6 +2,7 @@ package com.gilles_m.rpg_chest;
 
 import com.gilles_m.rpg_chest.container.ContainerLoader;
 import com.gilles_m.rpg_chest.container.instance.InstanceLoader;
+import com.gilles_m.rpg_chest.item.ItemLoader;
 import com.gilles_m.rpg_chest.item_table.TableLoader;
 import com.gilles_m.rpg_chest.key.KeyLoader;
 import com.gilles_m.rpg_chest.listener.ContainerListener;
@@ -32,6 +33,7 @@ public class RPGChest extends JavaPlugin {
 		CommandLib.initialize(plugin);
 
 		Dependency.getInstance().load();
+		ItemLoader.getInstance().load();
 		KeyLoader.getInstance().load();
 		TableLoader.getInstance().load();
 		ContainerLoader.getInstance().load();

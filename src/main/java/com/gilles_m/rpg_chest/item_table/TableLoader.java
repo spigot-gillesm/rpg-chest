@@ -6,18 +6,15 @@ import com.gilles_m.rpg_chest.randomized_entity.RangeInteger;
 import com.gilles_m.rpg_chest.util.Dependency;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
+import com.github.spigot_gillesm.item_lib.ConfigurationItem;
 import com.github.spigot_gillesm.item_lib.YamlItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TableLoader {
 
@@ -51,7 +48,7 @@ public class TableLoader {
 		Formatter.info(String.format("Loaded %d item table(s)", manager.size()));
 	}
 
-	private Optional<ItemTable> loadItemTableFromFile(@NotNull final File file) throws IOException {
+	private Optional<ItemTable> loadItemTableFromFile(final File file) throws IOException {
 		final var itemTable = objectMapper.readValue(file, ItemTable.class);
 
 		if(itemTable == null) {
@@ -59,12 +56,13 @@ public class TableLoader {
 		}
 		final var id = file.getName().split("\\.")[0];
 		itemTable.setId(id);
-		itemTable.getItemSections().addAll(loadItemSections(FileUtils.getConfiguration(file), id));
+		itemTable.getItemSections().addAll(loadItemSections(file, FileUtils.getConfiguration(file), id));
 
 		return Optional.of(itemTable);
 	}
 
-	private List<ItemSection> loadItemSections(@NotNull final YamlConfiguration configuration, final String id) {
+	private List<ItemSection> loadItemSections(final File file, final YamlConfiguration configuration, final String id)
+			throws IOException {
 		final List<ItemSection> itemSections = new ArrayList<>();
 
 		if(!configuration.isConfigurationSection("items")) {
@@ -73,16 +71,18 @@ public class TableLoader {
 		}
 
 		for(final var key : configuration.getConfigurationSection("items").getKeys(false)) {
-			loadItemSection(configuration.getConfigurationSection("items." + key), id)
+			loadItemSection(file, configuration.getConfigurationSection("items." + key), id)
 					.ifPresent(itemSections::add);
 		}
 
 		return itemSections;
 	}
 
-	private Optional<ItemSection> loadItemSection(@NotNull final ConfigurationSection configurationSection, final String id) {
+	private Optional<ItemSection> loadItemSection(final File file, final ConfigurationSection configurationSection, final String id)
+			throws IOException {
 		try {
-			return loadItemStackFromFile(configurationSection).map(itemStack -> new ItemSection(
+			return loadItemStackFromFile(file, configurationSection, id)
+					.map(itemStack -> new ItemSection(
 					itemStack,
 					RangeInteger.fromString(configurationSection.getString("amount", "1")),
 					configurationSection.getInt("chance", 1))
@@ -98,12 +98,34 @@ public class TableLoader {
 		return Optional.empty();
 	}
 
-	private Optional<ItemStack> loadItemStackFromFile(@NotNull final ConfigurationSection configurationSection) {
+	private Optional<ItemStack> loadItemStackFromFile(final File file, final ConfigurationSection configurationSection,
+													  final String id) throws IOException {
 		if(configurationSection.contains("item")) {
 			return Dependency.getInstance().getItemStackFromString(configurationSection.getString("item"));
 		} else {
+			final Map<String, Object> content = configurationSection.getValues(true);
+			Formatter.info("values: " + content);
+			final Map<String, Object> recursiveLessContent = removeRecursive(content);
+			Formatter.info("values recurless: " + recursiveLessContent);
+
+			Formatter.info("To string from conf section: " + new ObjectMapper().writeValueAsString(recursiveLessContent));
+			final var item = ConfigurationItem.fromFile(file, "items", id);
 			return Optional.of(YamlItem.fromConfiguration(configurationSection).getItemFromFile().make().getItemStack());
 		}
+	}
+
+	private Map<String, Object> removeRecursive(final Map<String, Object> map) {
+		final Map<String, Object> copy = new HashMap<>();
+
+		for(final var entrySet : map.entrySet()) {
+			if(entrySet.getValue() instanceof ConfigurationSection) {
+				copy.put(entrySet.getKey(), removeRecursive(((ConfigurationSection) entrySet.getValue()).getValues(true)));
+			} else {
+				copy.put(entrySet.getKey(), entrySet.getValue());
+			}
+		}
+
+		return copy;
 	}
 
 	public static TableLoader getInstance() {
