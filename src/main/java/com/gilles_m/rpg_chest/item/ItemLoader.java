@@ -26,9 +26,11 @@ public class ItemLoader {
 					.forEach(f -> {
 						final var itemName = f.getName().split("\\.")[0];
 								try {
-									manager.registerItem(itemName, ConfigurationItem.fromFile(f).toItemStack());
+									manager.registerItem(itemName,
+											ConfigurationItem.fromFile(f).toItemStack());
 								} catch (final IOException exception) {
 									Formatter.error(String.format("Unable to load item %s: Invalid data.", itemName));
+									exception.printStackTrace();
 								}
 							}
 					);

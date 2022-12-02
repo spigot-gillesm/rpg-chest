@@ -7,14 +7,16 @@ import com.gilles_m.rpg_chest.util.Dependency;
 import com.github.spigot_gillesm.file_utils.FileUtils;
 import com.github.spigot_gillesm.format_lib.Formatter;
 import com.github.spigot_gillesm.item_lib.ConfigurationItem;
-import com.github.spigot_gillesm.item_lib.YamlItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class TableLoader {
 
@@ -56,13 +58,12 @@ public class TableLoader {
 		}
 		final var id = file.getName().split("\\.")[0];
 		itemTable.setId(id);
-		itemTable.getItemSections().addAll(loadItemSections(file, FileUtils.getConfiguration(file), id));
+		itemTable.getItemSections().addAll(loadItemSections(FileUtils.getConfiguration(file), id));
 
 		return Optional.of(itemTable);
 	}
 
-	private List<ItemSection> loadItemSections(final File file, final YamlConfiguration configuration, final String id)
-			throws IOException {
+	private List<ItemSection> loadItemSections(final YamlConfiguration configuration, final String id) {
 		final List<ItemSection> itemSections = new ArrayList<>();
 
 		if(!configuration.isConfigurationSection("items")) {
@@ -70,62 +71,42 @@ public class TableLoader {
 			return itemSections;
 		}
 
-		for(final var key : configuration.getConfigurationSection("items").getKeys(false)) {
-			loadItemSection(file, configuration.getConfigurationSection("items." + key), id)
+		for(final var setionName : configuration.getConfigurationSection("items").getKeys(false)) {
+			loadItemSection(configuration.getConfigurationSection("items." + setionName), id)
 					.ifPresent(itemSections::add);
 		}
 
 		return itemSections;
 	}
 
-	private Optional<ItemSection> loadItemSection(final File file, final ConfigurationSection configurationSection, final String id)
-			throws IOException {
+	private Optional<ItemSection> loadItemSection(final ConfigurationSection configurationSection, final String tableId) {
 		try {
-			return loadItemStackFromFile(file, configurationSection, id)
+			return loadItemStackFromConfiguration(configurationSection)
 					.map(itemStack -> new ItemSection(
 					itemStack,
 					RangeInteger.fromString(configurationSection.getString("amount", "1")),
 					configurationSection.getInt("chance", 1))
 			).or(() -> {
-				Formatter.error(String.format("Could not load item in item section %s", id));
+				Formatter.error(String.format("Could not load item section %s in %s", configurationSection.getName(), tableId));
 				return Optional.empty();
 			});
 		} catch (final IllegalArgumentException exception) {
-			Formatter.warning(String.format("Invalid item section data in %s item table in section %s", id,
+			Formatter.error(String.format("Invalid item section data %s in %s", tableId,
 					configurationSection.getName()));
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<ItemStack> loadItemStackFromFile(final File file, final ConfigurationSection configurationSection,
-													  final String id) throws IOException {
+	private Optional<ItemStack> loadItemStackFromConfiguration(final ConfigurationSection configurationSection) {
 		if(configurationSection.contains("item")) {
 			return Dependency.getInstance().getItemStackFromString(configurationSection.getString("item"));
+		} else if(configurationSection.contains("material")) {
+			return Optional.of(ConfigurationItem.fromConfiguration(configurationSection).toItemStack());
 		} else {
-			final Map<String, Object> content = configurationSection.getValues(true);
-			Formatter.info("values: " + content);
-			final Map<String, Object> recursiveLessContent = removeRecursive(content);
-			Formatter.info("values recurless: " + recursiveLessContent);
-
-			Formatter.info("To string from conf section: " + new ObjectMapper().writeValueAsString(recursiveLessContent));
-			final var item = ConfigurationItem.fromFile(file, "items", id);
-			return Optional.of(YamlItem.fromConfiguration(configurationSection).getItemFromFile().make().getItemStack());
+			Formatter.error("The item section must specify 'item' or 'material'");
+			return Optional.empty();
 		}
-	}
-
-	private Map<String, Object> removeRecursive(final Map<String, Object> map) {
-		final Map<String, Object> copy = new HashMap<>();
-
-		for(final var entrySet : map.entrySet()) {
-			if(entrySet.getValue() instanceof ConfigurationSection) {
-				copy.put(entrySet.getKey(), removeRecursive(((ConfigurationSection) entrySet.getValue()).getValues(true)));
-			} else {
-				copy.put(entrySet.getKey(), entrySet.getValue());
-			}
-		}
-
-		return copy;
 	}
 
 	public static TableLoader getInstance() {
