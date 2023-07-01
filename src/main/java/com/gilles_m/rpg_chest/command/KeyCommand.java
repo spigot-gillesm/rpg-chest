@@ -111,7 +111,7 @@ public class KeyCommand extends SimpleCommand {
 				return;
 			}
 			if(key.isEmpty()) {
-				Formatter.tell(commandSender,String.format(UNKNOWN_KEY_ERROR, args[1]));
+				Formatter.tell(commandSender, String.format(UNKNOWN_KEY_ERROR, args[1]));
 				return;
 			}
 			final var item = key.get().getItemStack().clone();
