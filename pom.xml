@@ -8,6 +8,7 @@
     <artifactId>rpg-chest</artifactId>
     <version>1.1.0</version>
     <name>RPGChest</name>
+    <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
 
     <properties>
@@ -15,10 +16,10 @@
         <maven.compiler.source>15</maven.compiler.source>
         <maven.compiler.target>15</maven.compiler.target>
         <java.version>15</java.version>
-        <spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>
-        <jackson.version>2.13.0</jackson.version>
-        <lombok.version>1.18.22</lombok.version>
-        <annotations.version>23.0.0</annotations.version>
+        <spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
+        <jackson.version>2.14.2</jackson.version>
+        <lombok.version>1.18.26</lombok.version>
+        <annotations.version>24.0.1</annotations.version>
         <format-lib.version>1.0.0</format-lib.version>
         <file-utils.version>1.0.0</file-utils.version>
         <item-lib.version>1.1.0</item-lib.version>
@@ -30,7 +31,7 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
+            <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
@@ -38,13 +39,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-
-        <repository>
-            <id>nexus</id>
-            <name>Lumine Releases</name>
-            <url>https://mvn.lumine.io/repository/maven-public/</url>
-        </repository>
-
     </repositories>
 
     <dependencies>
@@ -101,6 +95,13 @@
 
         <dependency>
             <groupId>io.lumine.mythic</groupId>
+            <artifactId>lib</artifactId>
+            <version>${mythic-lib.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.lumine.mythic</groupId>
             <artifactId>mythicmobs</artifactId>
             <version>${mythic-mobs.version}</version>
             <scope>provided</scope>
@@ -110,13 +111,6 @@
             <groupId>net.Indyuce</groupId>
             <artifactId>mmoitems</artifactId>
             <version>${mmoitems.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.lumine.mythic</groupId>
-            <artifactId>lib</artifactId>
-            <version>${mythic-lib.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
